@@ -34,8 +34,12 @@ namespace FiveM.Core.Managers
 		private async Task ShopManager_Tick() => HandleShops();
 
 		private static Menu ShopMenu = null;
+		
 		private void HandleShops()
 		{
+			if (MenuController.IsAnyMenuOpen())
+				return;
+
 			Shop closestShop = null;
 
 			foreach (var a in Shops)
@@ -60,25 +64,30 @@ namespace FiveM.Core.Managers
 				return;
 			}
 
-			MenuController.AddMenu(ShopMenu);
-			MenuController.DontOpenAnyMenu = false;
-
-			switch (closestShop.ShopType)
+			if (ShopMenu == null)
 			{
-				case ShopType.Barber:
-					ShopMenu = new BarberShop().GetShopMenu();
-					break;
+				switch (closestShop.ShopType)
+				{
+					case ShopType.Barber:
+						ShopMenu = new BarberShop().GetShopMenu();
+						break;
+				}
+
+				MenuController.AddMenu(ShopMenu);
+				MenuController.DontOpenAnyMenu = false;
 			}
 
 			if (World.GetDistance(Game.PlayerPed.Position, closestShop.Location) > closestShop.Distance)
 				return;
 
-			AddTextEntry("Price", $"Press ~INPUT_CONTEXT~ to open shop menu!");
-			DisplayHelpTextThisFrame("Price", false);
-
-			if(IsControlJustReleased(0, 46))
+			if (IsControlJustReleased(0, 46))
 			{
 				ShopMenu.OpenMenu();
+			}
+			else
+			{
+				AddTextEntry("Price", $"Press ~INPUT_CONTEXT~ to open shop menu!");
+				DisplayHelpTextThisFrame("Price", false);
 			}
 		}
 

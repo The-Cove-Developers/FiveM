@@ -56,7 +56,7 @@ namespace FiveM.Core.Misc.Shop
 			if (Game.PlayerPed.Model == "mp_m_freemode_01") HairStyle = new MenuListItem("Hair", Menus.CharacterCreationMenu.MaleHair, GetPedDrawableVariation(ped, 2));
 			else HairStyle = new MenuListItem("Hair", Menus.CharacterCreationMenu.FemaleHair, GetPedDrawableVariation(ped, 2));
 
-			MenuListItem HairColour = new MenuListItem("Hair Colour",  Menus.CharacterCreationMenu.OverlayColours, GetPedHairColor(ped)) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+			MenuListItem HairColour = new MenuListItem("Hair Colour", Menus.CharacterCreationMenu.OverlayColours, GetPedHairColor(ped)) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
 			MenuListItem HairHighlights = new MenuListItem("Hair Highlights", Menus.CharacterCreationMenu.OverlayColours, GetPedHairHighlightColor(ped)) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
 
 			MenuListItem BeardStyle = new MenuListItem("Beard", Menus.CharacterCreationMenu.BeardList, intBeardStyle);
@@ -151,17 +151,38 @@ namespace FiveM.Core.Misc.Shop
 						break;
 				}
 			};
-			BarberMenu.OnMenuOpen += async (menu) => {
+
+			Camera Camera = new Camera(CreateCam("DEFAULT_SCRIPTED_CAMERA", true));
+
+			BarberMenu.OnMenuOpen += async (menu) =>
+			{
 				FreezeEntityPosition(Game.PlayerPed.Handle, true);
 				SetEntityCollision(Game.PlayerPed.Handle, false, false);
 				SetEntityInvincible(Game.PlayerPed.Handle, true);
 				Game.Player.CanControlCharacter = false;
+
+				ClearPedTasksImmediately(Game.PlayerPed.Handle);
+
+				var camPos = Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 1f);
+				camPos.Z += 0.75f;
+
+				var camPoint = Game.PlayerPed.Position;
+				camPoint.Z += 0.5f;
+
+				Camera.Position = camPos;
+				Camera.PointAt(camPoint);
+
+				RenderScriptCams(true, false, 0, true, true);
 			};
-			BarberMenu.OnMenuClose += async (menu) => {
+			BarberMenu.OnMenuClose += async (menu) =>
+			{
 				FreezeEntityPosition(Game.PlayerPed.Handle, false);
 				SetEntityCollision(Game.PlayerPed.Handle, true, true);
 				SetEntityInvincible(Game.PlayerPed.Handle, false);
 				Game.Player.CanControlCharacter = true;
+
+				RenderScriptCams(false, false, 0, false, false);
+				//DestroyAllCams(true);
 			};
 
 			return BarberMenu;
