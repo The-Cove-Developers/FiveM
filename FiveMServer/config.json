@@ -1,0 +1,7 @@
+{
+  "server": "8.8.8.8",
+  "user": "FiveM",
+  "database": "FiveM",
+  "port": "3306",
+  "password": "totallysecurepasswordgoeshere;)"
+}

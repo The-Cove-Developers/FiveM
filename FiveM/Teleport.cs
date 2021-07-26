@@ -29,10 +29,10 @@ namespace FiveM
 
         public Teleport()
         {
-            Tick += tCheckTeleport;
+            Tick += TeleportTickCheck;
 
         }
-        private async Task tCheckTeleport() { await Delay(0); TeleportCheck(); }
+        private async Task TeleportTickCheck() { await Delay(0); TeleportCheck(); }
 
         public void TeleportCheck()
         {

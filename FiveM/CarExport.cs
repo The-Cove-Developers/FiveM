@@ -17,10 +17,10 @@ namespace FiveM
 
 		public CarExport()
 		{
-			Tick += tCheckSale;
+			Tick += CarExportTick;
 
 		}
-		private async Task tCheckSale() => CheckSale();
+		private async Task CarExportTick() => CheckSale();
 
 		public void CheckSale()
 		{
@@ -72,7 +72,7 @@ namespace FiveM
 			Game.PlayerPed.CurrentVehicle.Delete();
 			Game.PlayerPed.Position = new Vector3(1177.80f, -3113.80f, 5);
 
-			MoneyHandler.AddMoney(Price);
+			Core.CharacterManagement.SaveHandler.AddMoney(Price);
 
 			await Delay(500);
 

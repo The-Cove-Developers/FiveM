@@ -38,8 +38,9 @@
     <Reference Include="MenuAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MenuAPI.FiveM.3.2.2\lib\net452\MenuAPI.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\portable-net40+sl5+win8+wp8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,18 +52,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\CharacterManagement\SaveHandler.cs" />
     <Compile Include="Core\Managers\BlipHandler.cs" />
     <Compile Include="CarExport.cs" />
     <Compile Include="Core\DrawUI.cs" />
-    <Compile Include="Core\Extensions.cs" />
-    <Compile Include="Core\Managers\MoneyHandler.cs" />
-    <Compile Include="Core\Managers\PlayerManager.cs" />
+    <Compile Include="Core\Managers\ShopManager.cs" />
+    <Compile Include="Core\Menus\CharacterCreationMenu.cs" />
+    <Compile Include="Core\Misc\CharacterData.cs" />
+    <Compile Include="Core\Misc\Extensions.cs" />
+    <Compile Include="Core\CharacterManagement\CharacterCreation.cs" />
+    <Compile Include="Core\Menus\InteractionMenu.cs" />
     <Compile Include="Core\Managers\RobberyManager.cs" />
     <Compile Include="Core\Managers\SpawnManager.cs" />
-    <Compile Include="Core\Managers\VehicleManager.cs" />
+    <Compile Include="Core\Misc\Shop\BarberShop.cs" />
+    <Compile Include="Core\Misc\Shop\Shop.cs" />
     <Compile Include="Core\Ped Handlers\PedSpawner.cs" />
     <Compile Include="FiveMCore.cs" />
-    <Compile Include="Core\Managers\HunterManager.cs" />
+    <Compile Include="Core\Ped Handlers\HunterManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Teleport.cs" />
     <Compile Include="WeaponSystem.cs" />
@@ -70,6 +76,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

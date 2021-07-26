@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FiveM.Core
+namespace FiveM.Core.Misc
 {
 	static class Extensions
 	{

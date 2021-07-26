@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using static CitizenFX.Core.Native.API;
 
-namespace FiveM.Core.Managers
+namespace FiveM.Core.Ped_Handlers
 {
 	class HunterManager : BaseScript
 	{
@@ -28,10 +28,10 @@ namespace FiveM.Core.Managers
 			foreach (string model in models)
 				RequestModel((uint)GetHashKey(model));
 
-			Tick += OnTick;
+			Tick += HunterTick;
 		}
 
-		private async Task OnTick()
+		private async Task HunterTick()
 		{
 			if (Notoriety < 15)
 				_notorietyTrigger = false;
@@ -41,7 +41,6 @@ namespace FiveM.Core.Managers
 			if(Game.Player.WantedLevel < 1 && Notoriety > 15 && (DateTime.Now - LastCheck).Minutes > 1.5)
 			{
 				int Check = new System.Random().Next(20, 100);
-				Debug.WriteLine($"Checking Notoriety: {Notoriety} | {Check}");
 
 				if(Check < Notoriety)
 				{
@@ -193,11 +192,6 @@ namespace FiveM.Core.Managers
 			}
 			else
 				pos.Z += rnd.Next(50, 75);
-
-
-
-
-			Debug.WriteLine(pos.ToString());
 
 			var vehicle = await World.CreateVehicle(new Model(GetHashKey(model)), pos, GetEntityHeading(Game.PlayerPed.Handle));
 

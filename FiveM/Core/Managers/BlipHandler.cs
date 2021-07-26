@@ -31,34 +31,18 @@ namespace FiveM.Core.Managers
 
 		public BlipHandler()
 		{
-			Tick += tDrawMarkers;
+			Tick += BlipTick;
 
 		}
-		private async Task tDrawMarkers() { DrawMarkersAndBlips(); }
+		private async Task BlipTick() { 
+			DrawMarkersAndBlips();
+			PlayerBlips();
+			VehicleBlip();
+		}
 
 		public void DrawMarkersAndBlips()
 		{
 			if (!AreBlipsMade) { LoadBlipData(); return; }
-
-			//if (!Game.PlayerPed.IsInVehicle() && !Game.PlayerPed.IsGettingIntoAVehicle && Game.PlayerPed.LastVehicle != null)
-			//{
-			//	if (Game.PlayerPed.LastVehicle.AttachedBlips.Length < 1)
-			//	{
-			//		Game.PlayerPed.LastVehicle.AttachBlip();
-			//		var blip = Game.PlayerPed.LastVehicle.AttachedBlips[0];
-
-			//		SetBlipSprite(blip.Handle, 225);
-			//		SetBlipAsShortRange(blip.Handle, true);
-			//	}					
-			//}
-			//else if (Game.PlayerPed.IsInVehicle())
-			//{
-			//	if (Game.PlayerPed.LastVehicle.AttachedBlips.Length > 0)
-			//	{
-			//		foreach (var blip in Game.PlayerPed.LastVehicle.AttachedBlips)
-			//			blip.Delete();
-			//	}
-			//}
 
 			foreach (BlipMarkerData data in Blips)
 			{
@@ -82,7 +66,6 @@ namespace FiveM.Core.Managers
 				
 			}
 		}
-
 		public void LoadBlipData()
 		{
 			AreBlipsMade = false;
@@ -102,13 +85,13 @@ namespace FiveM.Core.Managers
 			#endregion
 
 			#region Barbers
-			Blips.Add(new BlipMarkerData(-813.71356201172f, -184.06265258789f, 36f, 71, "Barber"));
-			Blips.Add(new BlipMarkerData(136.97842407227f, -1707.8671875f, 28f, 71, "Barber"));
-			Blips.Add(new BlipMarkerData(-1282.8363037109f, -1116.9685058594f, 5.8f, 71, "Barber"));
-			Blips.Add(new BlipMarkerData(1931.7169189453f, 3730.3142089844f, 31f, 71, "Barber"));
-			Blips.Add(new BlipMarkerData(1212.4298095703f, -472.55453491211f, 65f, 71, "Barber"));
-			Blips.Add(new BlipMarkerData(-32.703586578369f, -152.55470275879f, 56f, 71, "Barber"));
-			Blips.Add(new BlipMarkerData(-278.02655029297f, 6228.3115234375f, 30f, 71, "Barber"));
+			//Blips.Add(new BlipMarkerData(-813.71356201172f, -184.06265258789f, 36f, 71, "Barber"));
+			//Blips.Add(new BlipMarkerData(136.97842407227f, -1707.8671875f, 28f, 71, "Barber"));
+			//Blips.Add(new BlipMarkerData(-1282.8363037109f, -1116.9685058594f, 5.8f, 71, "Barber"));
+			//Blips.Add(new BlipMarkerData(1931.7169189453f, 3730.3142089844f, 31f, 71, "Barber"));
+			//Blips.Add(new BlipMarkerData(1212.4298095703f, -472.55453491211f, 65f, 71, "Barber"));
+			//Blips.Add(new BlipMarkerData(-32.703586578369f, -152.55470275879f, 56f, 71, "Barber"));
+			//Blips.Add(new BlipMarkerData(-278.02655029297f, 6228.3115234375f, 30f, 71, "Barber"));
 			#endregion
 
 			#region Clothing store
@@ -150,6 +133,88 @@ namespace FiveM.Core.Managers
 			#endregion
 
 			AreBlipsMade = true;
+		}
+
+		private void PlayerBlips()
+		{
+			foreach (var plr in Players)
+			{
+				if (plr == Game.Player)
+					continue;
+
+				if (plr.Character.AttachedBlips.Length < 1)
+				{
+					var blip = plr.Character.AttachBlip();
+
+					SetBlipSprite(blip.Handle, 1);
+
+					BeginTextCommandSetBlipName("STRING");
+					AddTextComponentString(plr.Name);
+					EndTextCommandSetBlipName(blip.Handle);
+				}
+			}
+		}
+
+		private Vehicle _lastVehicle;
+		private void VehicleBlip()
+		{
+			if (Game.PlayerPed.IsInVehicle())
+			{
+				if (_lastVehicle != null && _lastVehicle.AttachedBlips.Length > 0)
+				{
+					foreach (var blip in _lastVehicle.AttachedBlips)
+						blip.Delete();
+				}
+
+				_lastVehicle = null;
+
+				return;
+			}
+
+
+			if (Game.PlayerPed.LastVehicle == null)
+				return;
+
+			if (_lastVehicle == null)
+				_lastVehicle = Game.PlayerPed.LastVehicle;
+
+			if (_lastVehicle.IsDriveable)
+			{
+
+				if (_lastVehicle.AttachedBlips.Length < 1)
+				{
+					_lastVehicle.AttachBlip();
+					var blip = _lastVehicle.AttachedBlips[0];
+
+					SetBlipSprite(blip.Handle, 225);
+					SetBlipAsShortRange(blip.Handle, true);
+
+					BeginTextCommandSetBlipName("STRING");
+					AddTextComponentString("Vehicle");
+					EndTextCommandSetBlipName(blip.Handle);
+				}
+			}
+			else if (_lastVehicle.AttachedBlips.Length > 0)
+			{
+				foreach (var blip in _lastVehicle.AttachedBlips)
+					blip.Delete();
+
+				Player player = null;
+				foreach (var plr in Players)
+				{
+					if (!_lastVehicle.HasBeenDamagedBy(plr.Character))
+						continue;
+					else
+					{
+						player = plr;
+						break;
+					}
+				}
+
+				BeginTextCommandDisplayHelp("THREESTRINGS");
+				AddTextComponentSubstringPlayerName($"The vehicle you last used has been destroyed{(player == null ? "" : $" by {player.Name}")}!");
+				EndTextCommandDisplayHelp(0, false, false, 6000);
+			}
 		}
 	}
 }

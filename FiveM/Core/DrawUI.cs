@@ -15,12 +15,12 @@ namespace FiveM.Core
 	{
 		public DrawUI()
 		{
-			Tick += OnTick;
+			Tick += UITick;
 		}
 
-		private async Task OnTick()
+		private async Task UITick()
 		{
-			if (Game.PlayerPed.IsDead)
+			if (Game.PlayerPed.IsDead || Game.PlayerPed.Position.Z < -1)
 			{
 				HideHudAndRadarThisFrame();
 				return;
@@ -33,21 +33,15 @@ namespace FiveM.Core
 			}
 
 			HideHudComponentThisFrame((int)HudComponent.StreetName);
-			//ShowHudComponentThisFrame((int)HudComponent.WeaponIcon);
 
 			bool isInVehicle = Game.PlayerPed.IsInVehicle();
-
-			//if (!isInVehicle)
-			//	DisplayRadar(false);
-			//else
-			//DisplayRadar(true);
 
 			float xPos = (float)(0.208f + (1 / GetSafeZoneSize() / 3.1f) - /*(isInVehicle ?*/ 0.377f /*: /*0.52*/);
 			float yPos = 0f;
 
 			//Cash
 			yPos = GetSafeZoneSize() - (isInVehicle ? GetTextScaleHeight(1.8f, 1) : GetTextScaleHeight(1.3f, 1));
-			DrawText($"${MoneyHandler.Money}", xPos, yPos, 0.8f, 0.5f, (int)Alignment.Left, 4, 150, 255, 150, 255);
+			DrawText($"${Core.CharacterManagement.SaveHandler.Money}", xPos, yPos, 0.8f, 0.5f, (int)Alignment.Left, 4, 150, 255, 150, 255);
 
 			//Time
 			yPos = GetSafeZoneSize() - (isInVehicle ? GetTextScaleHeight(1.3f, 1) : GetTextScaleHeight(0.8f, 1));

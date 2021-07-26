@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using System.Linq;
+using FiveM.Core.Ped_Handlers;
+using FiveM.Core.Misc;
 
 namespace FiveM.Core.Managers
 {
@@ -52,9 +54,9 @@ namespace FiveM.Core.Managers
 
 		public RobberyManager()
 		{
-			Tick += OnTick;
+			Tick += RobberyTick;
 		}
-		public async Task OnTick()
+		public async Task RobberyTick()
 		{
 			CheckLocations();
 			UpdateWantedStatus();
@@ -69,6 +71,13 @@ namespace FiveM.Core.Managers
 
 			if((DateTime.Now - cloLoc.LastRobbed).TotalSeconds < 30)
 				return;
+
+			if(GetMaxWantedLevel() < 1)
+			{
+				AddTextEntry("Price", $"Pussy!");
+				DisplayHelpTextThisFrame("Price", false);
+				return;
+			}
 			
 			if((DateTime.Now - cloLoc.LastRobbed).TotalMinutes < 48)
 			{
@@ -90,7 +99,7 @@ namespace FiveM.Core.Managers
 			{
 				int Gain = new Random().Next(cloLoc.MinMoney, cloLoc.MaxMoney);
 
-				MoneyHandler.AddMoney(Gain);
+				Core.CharacterManagement.SaveHandler.AddMoney(Gain);
 				cloLoc.LastRobbed = DateTime.Now;
 
 				BeginTextCommandDisplayHelp("THREESTRINGS");

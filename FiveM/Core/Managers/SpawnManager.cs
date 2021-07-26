@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using FiveM.Core.Ped_Handlers;
+using FiveM.Core.Misc;
 
 namespace FiveM.Core.Managers
 {
@@ -30,7 +32,7 @@ namespace FiveM.Core.Managers
 			int MoneyTaken = 0;
 			if (RobberyManager.IsWantedForRobbery)
 			{
-				MoneyHandler.RemoveMoney(RobberyManager.LastRobberyGain);
+				Core.CharacterManagement.SaveHandler.RemoveMoney(RobberyManager.LastRobberyGain);
 				MoneyTaken = RobberyManager.LastRobberyGain;
 				RobberyManager.LastRobberyGain = 0;
 				RobberyManager.IsWantedForRobbery = false;
@@ -65,10 +67,10 @@ namespace FiveM.Core.Managers
 			ClearPedTasks(ped);
 			ClearPlayerWantedLevel(ped);
 
-			HospitalBill = random.Next(MoneyHandler.Money / 8, MoneyHandler.Money / 3);
-			HospitalBill = HospitalBill.Clamp(500, MoneyHandler.Money);
+			HospitalBill = random.Next(Core.CharacterManagement.SaveHandler.Money / 8, Core.CharacterManagement.SaveHandler.Money / 3);
+			HospitalBill = HospitalBill. Clamp(500, Core.CharacterManagement.SaveHandler.Money);
 
-			MoneyHandler.RemoveMoney(HospitalBill);
+			Core.CharacterManagement.SaveHandler.RemoveMoney(HospitalBill);
 
 			DisplayHud(true);
 

@@ -10,19 +10,17 @@ namespace FiveM
 {
     class FiveMCore : BaseScript
     {
-        bool Blackout = false;
+        //List<Vector3> spawns = new List<Vector3>()
+        //{
+        //    { new Vector3(2533.0f, 2833.0f, 38.0f) },
+        //    { new Vector3(2606.0f, 2927.0f, 40.0f) },
+        //    { new Vector3(2463.0f, 3872.0f, 38.8f) },
+        //    { new Vector3(1164.0f, 6433.0f, 32.0f) },
+        //    { new Vector3(537.0f, -1324.1f, 29.1f) },
+        //    { new Vector3(219.1f, -2487.7f, 6.0f) }
+        //};
 
-        List<Vector3> spawns = new List<Vector3>()
-        {
-            { new Vector3(2533.0f, 2833.0f, 38.0f) },
-            { new Vector3(2606.0f, 2927.0f, 40.0f) },
-            { new Vector3(2463.0f, 3872.0f, 38.8f) },
-            { new Vector3(1164.0f, 6433.0f, 32.0f) },
-            { new Vector3(537.0f, -1324.1f, 29.1f) },
-            { new Vector3(219.1f, -2487.7f, 6.0f) }
-        };
-
-        List<string> models = new List<string>() { "freight", "freightcar", "freightgrain", "freightcont1", "freightcont2", "freighttrailer", "tankercar", "metrotrain", "s_m_m_lsmetro_01", "u_m_y_juggernaut_01", "ig_vincent", "s_m_y_blackops_01" };
+        List<string> models = new List<string>() { /*"freight", "freightcar", "freightgrain", "freightcont1", "freightcont2", "freighttrailer", "tankercar", "metrotrain", "s_m_m_lsmetro_01", "u_m_y_juggernaut_01",*/ /*"ig_vincent",*/ "s_m_y_blackops_01", "mp_f_freemode_01", "mp_m_freemode_01" };
 
         public FiveMCore()
         {
@@ -31,35 +29,30 @@ namespace FiveM
 
         private async void OnClientResourceStart(string resourceName)
         {
-            RegisterCustomCommands();
+			if (resourceName != GetCurrentResourceName())
+				return;
+
+			if (Game.IsLoading || IsNetworkLoadingScene())
+				await Delay(500);
+
+			RegisterCustomCommands();
 
             foreach (var model in models)
             {
-                RequestModel((uint)GetHashKey(model));
-            }
+				var modelHash = (uint)GetHashKey(model);
 
-			//if (Game.IsLoading)
-			//{
-				PedSpawner.SpawnPed();
+				Debug.WriteLine($"Loading model: {model} ({modelHash})");
 
-				await Delay(1500);
+				while (!HasModelLoaded(modelHash))
+				{
+					RequestModel(modelHash);
+					await Delay(10);
+				}
 
-				ShutdownLoadingScreen();
+				Debug.WriteLine($"Model has been loaded: {model} ({modelHash})");
+			}
 
-				DoScreenFadeIn(500);
-			//}
-
-			//Vector3 Pos = spawns[new Random().Next(0, spawns.Count - 1)];
-			//int id = CreateMissionTrain(new Random().Next(0, 22), Pos.X, Pos.Y, Pos.Z, true);
-
-			//int blipId = AddBlipForEntity(id);
-			//SetBlipAsFriendly(blipId, true);
-			//SetBlipSprite(blipId, 587);
-			//SetBlipAsShortRange(blipId, true);
-
-			//BeginTextCommandSetBlipName("STRING");
-			//AddTextComponentString("Train");
-			//EndTextCommandSetBlipName(blipId);
+			TriggerServerEvent("DSCP5M:RequestPlayerData");
 		}
 
         public void RegisterCustomCommands()
@@ -102,7 +95,7 @@ namespace FiveM
 
             RegisterCommand("money", new Action<int, List<object>, string>(async (source, args, raw) =>
             {
-				MoneyHandler.AddMoney(50000);
+				Core.CharacterManagement.SaveHandler.AddMoney(50000);
             }), false);
 
 			RegisterCommand("addnot", new Action<int, List<object>, string>(async (source, args, raw) =>

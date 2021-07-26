@@ -10,10 +10,10 @@ namespace FiveM
     {
         public WeaponSystem()
         {
-            Tick += OnTick;
+            //Tick += WeaponSystemTick;
         }
 
-        private async Task OnTick()
+        private async Task WeaponSystemTick()
         {
             try
             {
